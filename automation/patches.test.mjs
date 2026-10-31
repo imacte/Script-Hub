@@ -89,3 +89,13 @@ test('branch publication checks for concurrent owner commits and never force-upd
   await assert.rejects(api.publish('egern','old-head',[{path:'file',mode:'100644',type:'blob',sha:'existing-blob'}],new Map(),'sync'),/Branch advanced/);
   assert.equal(methods.some(m=>m.startsWith('PATCH')),false);
 });
+test('newly committed sync state uses the write receipt instead of a stale ref lookup', async () => {
+  const {syncDefault}=await import('./sync-fork.mjs');
+  const api={target:'imacte/Scripts',
+    ref:async(repo)=>({object:{sha:repo==='imacte/Scripts'?'old-fork-head':'upstream-head'}}),
+    json:async()=>null,
+    request:async()=>({merge_type:'already_up_to_date'}),
+    publish:async()=>({changed:true,sha:'new-sync-state-head'})};
+  const result=await syncDefault(api,{upstream:'ddgksf2013/Scripts',branch:'master'},false);
+  assert.equal(result.sha,'new-sync-state-head');
+});

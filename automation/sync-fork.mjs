@@ -1,5 +1,6 @@
 import { readFile, appendFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { randomUUID } from 'node:crypto';
 import { OWNER, SYNC_STATE, UPSTREAM_STATE, GIST_SOURCE, REWRITE_PATHS, HUB_SCRIPTS,
   gitBlobSha, mergeTrees, treeDelta, managedPath, rewriteScripts, rewriteHub,
   rewriteBox, rewriteWeather, rewriteSubStore, updateProfile, releaseTag,
@@ -43,7 +44,11 @@ export class GitHubApi {
       throw error;
     }
   }
-  ref(repo, branch, optional = false) { return this.request('GET', `repos/${repo}/git/ref/heads/${encoder(branch)}`, undefined, optional); }
+  ref(repo, branch, optional = false) {
+    // Ref lookups can briefly return a cached pre-update value immediately after
+    // a write. Immutable commits/blobs stay cached; mutable refs must be fresh.
+    return this.request('GET', `repos/${repo}/git/ref/heads/${encoder(branch)}?sync_read=${randomUUID()}`, undefined, optional);
+  }
   async commit(repo, sha) {
     const key = `${repo}:${sha}`;
     if (!this.commitCache.has(key)) this.commitCache.set(key, await this.request('GET', `repos/${repo}/git/commits/${sha}`));
@@ -121,7 +126,7 @@ async function download(url, maxBytes = 20 * 1024 * 1024) {
   return Buffer.concat(chunks);
 }
 
-async function syncDefault(api, project, dryRun) {
+export async function syncDefault(api, project, dryRun) {
   const target = api.target;
   let current = await api.ref(target, project.branch);
   const upstream = await api.ref(project.upstream, project.branch);
@@ -150,8 +155,8 @@ async function syncDefault(api, project, dryRun) {
   if (!dryRun && (previous?.upstream_commit !== upstream.object.sha || heartbeat)) {
     const state = Buffer.from(JSON.stringify({schema_version:1, upstream:project.upstream, branch:project.branch,
       upstream_commit:upstream.object.sha, mode, checked_at:new Date().toISOString()},null,2)+'\n');
-    await api.publish(project.branch,current.object.sha,[{path:UPSTREAM_STATE,mode:'100644',type:'blob',sha:gitBlobSha(state)}],new Map([[UPSTREAM_STATE,state]]),'Record upstream synchronization state');
-    current = await api.ref(target,project.branch);
+    const published = await api.publish(project.branch,current.object.sha,[{path:UPSTREAM_STATE,mode:'100644',type:'blob',sha:gitBlobSha(state)}],new Map([[UPSTREAM_STATE,state]]),'Record upstream synchronization state');
+    current = {object:{sha:published.sha}};
   }
   return { sha:current.object.sha, upstream:upstream.object.sha, mode };
 }
