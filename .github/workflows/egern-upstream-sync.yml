@@ -1,0 +1,19 @@
+# Managed by imacte/Script-Hub automation branch.
+name: Sync upstream and Egern resources
+
+on:
+  schedule:
+    - cron: '43 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: egern-upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository_owner == 'imacte'
+    uses: imacte/Script-Hub/.github/workflows/egern-sync-reusable.yml@automation
