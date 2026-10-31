@@ -1,0 +1,313 @@
+# 个人 Fork 版；生成日期 2026-10-31。
+# 使用前请填写自己的订阅链接，保留手机现有 MITM 证书及密码。
+# 上游默认分支用于同步，模块内部地址调整及发布附件放在 egern 分支。
+# WeatherKit 固定 v3.3.2；Sub-Store 固定 2.44.2，升级步骤见 Fork使用说明.txt。
+# 六个 ddgksf2013.top 失效模块暂时关闭；网易云音乐脚本仍引用原作者 Gist。
+ipv6: false
+allow_external_connections: false
+close_connections_on_policy_change: false
+geoip_db_url: https://raw.githubusercontent.com/imacte/geoip/release/Country.mmdb
+asn_db_url: https://raw.githubusercontent.com/imacte/geoip/release/GeoLite2-ASN.mmdb
+include_all_networks: true
+vif_excluded_routes:
+  - 10.0.0.0/8
+  - 100.64.0.0/10
+  - 127.0.0.0/8
+  - 169.254.0.0/16
+  - 172.16.0.0/12
+  - 192.0.0.0/24
+  - 192.0.2.0/24
+  - 192.88.99.0/24
+  - 192.168.0.0/16
+  - 198.51.100.0/24
+  - 203.0.113.0/24
+  - 224.0.0.0/4
+  - 255.255.255.255/32
+dns:
+  bootstrap:
+    - system
+  upstreams:
+    default:
+      - https://dns.alidns.com/dns-query
+      - https://cloudflare-dns.com/dns-query
+  forward:
+    - domain_wildcard:
+        match: '*'
+        value: default
+bypass_tunnel_proxy:
+  - 192.168.0.0/16
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - localhost
+  - '*.local'
+  - e.crashlynatics.com
+policy_groups:
+  - external:
+      name: 订阅节点
+      type: select
+      urls:
+        - https://example.com/REPLACE_WITH_YOUR_SUBSCRIPTION
+      update_interval: 86400
+      icon: list.bullet
+      hidden: false
+  - select:
+      name: 自用
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*\|\s*自用)(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      icon: list.bullet
+  - select:
+      name: 香港手动策略
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(🇭🇰|香港|(\b(HK|HKG|Hong)(\d+)?\b)))(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/HK.png
+  - select:
+      name: 台湾手动策略
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(🇹🇼|台湾|(\b(TW|TWN|Tai|Taiwan)(\d+)?\b)))(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/TW.png
+  - select:
+      name: 日本手动策略
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(🇯🇵|日本|川日|东京|大阪|泉日|埼玉|(\b(JP|JPN|Japan)(\d+)?\b)))(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/JP.png
+  - select:
+      name: 韩国手动策略
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(🇰🇷|韩国|韓|首尔|(\b(KR|KOR|Korea)(\d+)?\b)))(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/KR.png
+  - select:
+      name: 新国手动策略
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(🇸🇬|新加坡|狮|(\b(SG|SGP|Singapore)(\d+)?\b)))(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/SG.png
+  - select:
+      name: 美国手动策略
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(🇺🇸|美国|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(\b(US|USA|United States)(\d+)?\b)))(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/US.png
+  - select:
+      name: 苹果服务
+      policies:
+        - DIRECT
+        - 新国手动策略
+        - 香港手动策略
+        - 美国手动策略
+      flatten: false
+      icon: https://raw.githubusercontent.com/imacte/wool_scripts/main/icons/apps/Apple_02.png
+  - select:
+      name: 大陆抖音
+      policies:
+        - DIRECT
+        - 自用
+        - 新国手动策略
+        - 香港手动策略
+        - 台湾手动策略
+        - 美国手动策略
+        - 日本手动策略
+        - 韩国手动策略
+      flatten: false
+      icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok_2.png
+  - select:
+      name: 海外抖音
+      policies:
+        - DIRECT
+        - 自用
+        - 新国手动策略
+        - 香港手动策略
+        - 台湾手动策略
+        - 韩国手动策略
+        - 美国手动策略
+        - 日本手动策略
+      flatten: false
+      icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok_1.png
+  - select:
+      name: 全球手动策略
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(.))(?!.*(群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|(\b(USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author|Traffic)(\d+)?\b|(\d{4}-\d{2}-\d{2}|\dG)))).*$
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/Global.png
+  - auto_test:
+      name: 香港时延优选
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(🇭🇰|香港|(\b(HK|HKG|Hong)(\d+)?\b)))(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      interval: 60
+      tolerance: 50
+      timeout: 5
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/HK.png
+  - auto_test:
+      name: 台湾时延优选
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(🇹🇼|台湾|(\b(TW|TWN|Tai|Taiwan)(\d+)?\b)))(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      interval: 60
+      tolerance: 50
+      timeout: 5
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/TW.png
+  - auto_test:
+      name: 日本时延优选
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(🇯🇵|日本|川日|东京|大阪|泉日|埼玉|(\b(JP|JPN|Japan)(\d+)?\b)))(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      interval: 60
+      tolerance: 50
+      timeout: 5
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/JP.png
+  - auto_test:
+      name: 韩国时延优选
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(🇰🇷|韩国|韓|首尔|(\b(KR|KOR|Korea)(\d+)?\b)))(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      interval: 60
+      tolerance: 50
+      timeout: 5
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/KR.png
+  - auto_test:
+      name: 新国时延优选
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(🇸🇬|新加坡|狮|(\b(SG|SGP|Singapore)(\d+)?\b)))(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      interval: 60
+      tolerance: 50
+      timeout: 5
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/SG.png
+  - auto_test:
+      name: 美国时延优选
+      policies:
+        - 订阅节点
+      flatten: true
+      filter: (?i)^(?=.*(🇺🇸|美国|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(\b(US|USA|United States)(\d+)?\b)))(?!.*(回国|校园|游戏|🎮|(\b(GAME)\b))).*$
+      interval: 60
+      tolerance: 50
+      timeout: 5
+      icon: https://raw.githubusercontent.com/imacte/mini/master/Color/US.png
+  - fallback:
+      name: 兜底后备策略
+      policies:
+        - 自用
+        - 新国时延优选
+        - 美国时延优选
+        - 香港时延优选
+        - 台湾时延优选
+        - 日本时延优选
+        - 韩国时延优选
+      flatten: false
+      interval: 60
+      timeout: 2
+      icon: globe
+rules:
+  - protocol:
+      match: stun
+      policy: REJECT
+  - rule_set:
+      name: TikTok
+      match: https://raw.githubusercontent.com/imacte/ios_rule_script/master/rule/Surge/TikTok/TikTok.list
+      policy: 海外抖音
+      update_interval: 86400
+  - rule_set:
+      name: 大陆抖音
+      match: https://raw.githubusercontent.com/imacte/wool_scripts/main/Loon/rule/Douyin.list
+      policy: 大陆抖音
+      update_interval: 86400
+  - rule_set:
+      name: 苹果服务
+      match: https://raw.githubusercontent.com/imacte/wool_scripts/main/Loon/rule/AppleAll.list
+      policy: 苹果服务
+      update_interval: 86400
+  - rule_set:
+      name: Telegram
+      match: https://raw.githubusercontent.com/imacte/ios_rule_script/master/rule/Surge/Telegram/Telegram.list
+      policy: 自用
+      update_interval: 86400
+  - rule_set:
+      name: AI
+      match: https://raw.githubusercontent.com/imacte/ruleset.skk.moe/master/List/non_ip/ai.conf
+      policy: 自用
+      update_interval: 86400
+  - rule_set:
+      name: Speedtest Intl
+      match: https://raw.githubusercontent.com/imacte/ios_rule_script/master/rule/Surge/Speedtest/Speedtest.list
+      policy: 全球手动策略
+      update_interval: 86400
+  - rule_set:
+      name: LAN
+      match: https://raw.githubusercontent.com/imacte/ios_rule_script/master/rule/Surge/Lan/Lan.list
+      policy: DIRECT
+      update_interval: 86400
+  - rule_set:
+      name: CN REGION
+      match: https://raw.githubusercontent.com/imacte/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax.list
+      policy: DIRECT
+      update_interval: 86400
+  - geoip:
+      name: 中国 IP 直连补充
+      match: CN
+      policy: DIRECT
+  - default:
+      policy: 兜底后备策略
+mitm:
+  ca_p12: ''
+  ca_passphrase: ''
+modules:
+  - name: Script Hub
+    url: https://raw.githubusercontent.com/imacte/Script-Hub/egern/modules/script-hub.egern.yaml
+    enabled: true
+  - url: http://script.hub/file/_start_/https://raw.githubusercontent.com/imacte/Rewrite/egern/Html/General.conf/_end_/General.sgmodule?type=qx-rewrite&n=Google%E9%87%8D%E5%AE%9A%E5%90%91%E5%8A%9F%E8%83%BD%E5%A2%9E%E5%BC%BA%40DivineEngine+%E5%B0%86.cn%E9%87%8D%E5%AE%9A%E5%90%91%E8%87%B3.com&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=DivineEngine
+    enabled: true
+  - name: WeatherKit
+    url: https://raw.githubusercontent.com/imacte/WeatherKit/egern/release/v3.3.2/iRingo.WeatherKit.yaml
+    enabled: true
+  - url: http://script.hub/file/_start_/https://raw.githubusercontent.com/imacte/Rewrite/egern/Html/Q-Search.conf/_end_/Q-Search.sgmodule?type=qx-rewrite&n=Safari%E8%B6%85%E7%BA%A7%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD%E5%A2%9E%E5%BC%BA%40ddgksf2013+%E7%BF%BB%E8%AF%91%C2%B7%E7%A4%BE%E5%8C%BA%C2%B7%E8%B4%AD%E7%89%A9%C2%B7%E6%8D%A2%E5%8C%BA%C2%B7%E8%A7%86%E9%A2%91%C2%B7%E5%BC%95%E6%93%8E&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: true
+  - url: http://script.hub/file/_start_/https://raw.githubusercontent.com/imacte/Rewrite/egern/Function/UnblockURLinWeChat.conf/_end_/UnblockURLinWeChat.sgmodule?type=qx-rewrite&n=%E5%BE%AE%E4%BF%A1%E5%8A%9F%E8%83%BD%E5%A2%9E%E5%BC%BA%40zZPiglet+%E5%BE%AE%E4%BF%A1110%E8%A7%A3%E9%94%81%E8%A2%AB%E5%B1%8F%E8%94%BD%E7%9A%84URL&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=zZPiglet
+    enabled: true
+  - name: Sub-Store
+    url: https://raw.githubusercontent.com/imacte/Sub-Store/egern/config/Surge.sgmodule
+    enabled: true
+  - name: BoxJs
+    url: https://raw.githubusercontent.com/imacte/chavyleung-scripts/egern/box/rewrite/boxjs.rewrite.surge.sgmodule
+    enabled: true
+  - url: http://script.hub/file/_start_/https://raw.githubusercontent.com/imacte/Rewrite/egern/AdBlock/NeteaseAds.conf/_end_/NeteaseAds.sgmodule?type=qx-rewrite&n=%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%E5%8E%BB%E5%B9%BF%E5%91%8A%40ddgksf2013+%E5%BA%94%E7%94%A8%E5%87%80%E5%8C%96&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: true
+  - url: http://script.hub/file/_start_/https://ddgksf2013.top/scripts/bdpan.ads.js/_end_/bdpan.ads.sgmodule?type=qx-rewrite&n=%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E5%8E%BB%E5%B9%BF%E5%91%8A%40ddgksf2013+%E5%BA%94%E7%94%A8%E5%87%80%E5%8C%96&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: false
+  - url: http://script.hub/file/_start_/https://raw.githubusercontent.com/imacte/Scripts/egern/12306.js/_end_/12306.sgmodule?type=qx-rewrite&n=12306%E5%8E%BB%E5%B9%BF%E5%91%8A%40ddgksf2013+%E5%BA%94%E7%94%A8%E5%87%80%E5%8C%96&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: true
+  - url: http://script.hub/file/_start_/https://raw.githubusercontent.com/imacte/Rewrite/egern/AdBlock/ChinaUnicomAds.conf/_end_/ChinaUnicomAds.sgmodule?type=qx-rewrite&n=%E4%B8%AD%E5%9B%BD%E8%81%94%E9%80%9A%E5%8E%BB%E5%B9%BF%E5%91%8A%40ddgksf2013+%E5%BA%94%E7%94%A8%E5%87%80%E5%8C%96&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: true
+  - url: http://script.hub/file/_start_/https://ddgksf2013.top/rewrite/UmetripAds.conf/_end_/UmetripAds.sgmodule?type=qx-rewrite&n=%E8%88%AA%E6%97%85%E7%BA%B5%E6%A8%AA%E5%8E%BB%E5%B9%BF%E5%91%8A%40ddgksf2013+%E5%8E%BB%E5%BC%80%E5%B1%8F%E3%80%81%E5%BA%94%E7%94%A8%E5%87%80%E5%8C%96&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: false
+  - url: http://script.hub/file/_start_/https://ddgksf2013.top/scripts/123pan.ads.js/_end_/123pan.ads.sgmodule?type=qx-rewrite&n=123%E4%BA%91%E7%9B%98%E5%8E%BB%E5%B9%BF%E5%91%8A%40ddgksf2013+%E5%8E%BB%E9%99%A4%E7%BD%91%E9%A1%B5%E5%B9%BF%E5%91%8A&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: false
+  - url: http://script.hub/file/_start_/https://raw.githubusercontent.com/imacte/Rewrite/egern/AdBlock/AmapAds.conf/_end_/AmapAds.sgmodule?type=qx-rewrite&n=%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%E5%8E%BB%E5%B9%BF%E5%91%8A%40ddgksf2013+%E5%BA%94%E7%94%A8%E5%87%80%E5%8C%96&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: true
+  - url: http://script.hub/file/_start_/https://raw.githubusercontent.com/imacte/Rewrite/egern/AdBlock/GoofishAds.conf/_end_/GoofishAds.sgmodule?type=qx-rewrite&n=%E9%97%B2%E9%B1%BC%E5%8E%BB%E5%B9%BF%E5%91%8A%40ddgksf2013+%E5%BA%94%E7%94%A8%E5%87%80%E5%8C%96&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: true
+  - url: http://script.hub/file/_start_/https://ddgksf2013.top/rewrite/XiaoHongShuAds.conf/_end_/XiaoHongShuAds.sgmodule?type=qx-rewrite&n=%E5%B0%8F%E7%BA%A2%E4%B9%A6%E5%8E%BB%E5%B9%BF%E5%91%8A%40ddgksf2013+%E5%8E%BB%E5%B9%BF%E5%91%8A%E5%8E%BB%E6%B0%B4%E5%8D%B0&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: false
+  - url: http://script.hub/file/_start_/https://raw.githubusercontent.com/imacte/Rewrite/egern/AdBlock/Applet.conf/_end_/Applet.sgmodule?type=qx-rewrite&n=%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%8E%BB%E5%B9%BF%E5%91%8A%40ddgksf2013+%E5%8E%BB%E5%B9%BF%E5%91%8A%E8%A7%A3%E9%94%81%E5%86%85%E5%AE%B9%E9%9A%90%E8%97%8F&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: true
+  - url: http://script.hub/file/_start_/https://ddgksf2013.top/rewrite/BiliBiliAds.conf/_end_/BiliBiliAds.sgmodule?type=qx-rewrite&n=%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%8E%BB%E5%B9%BF%E5%91%8A%40ddgksf2013+%E5%85%A8%E9%9D%A2%E5%87%80%E5%8C%96&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: false
+  - url: http://script.hub/file/_start_/https://ddgksf2013.top/rewrite/StartUpAds.conf/_end_/StartUpAds.sgmodule?type=qx-rewrite&n=%E5%A2%A8%E9%B1%BC%E5%8E%BB%E5%BC%80%E5%B1%8F2.0%E5%8E%BB%E5%B9%BF%E5%91%8A%40ddgksf2013+%E5%B7%B2%E6%8A%93%E5%8C%85400%E4%BD%99%E5%BA%94%E7%94%A8%E5%8E%BB%E5%BC%80%E5%B1%8F&headers=User-Agent:surge&del=true&jqEnabled=true&target=surge-module&category=ddgksf2013
+    enabled: false
