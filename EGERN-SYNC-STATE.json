@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "upstream": "Script-Hub-Org/Script-Hub",
+  "base_commit": "385e5978bdaba95b51f8aeb4088025f968225f95",
+  "role": "module-converter",
+  "releases": [],
+  "managed_paths": [
+    "Rewrite-Parser.js",
+    "modules/script-hub.egern.yaml",
+    "profiles/Egern.yaml",
+    "rule-parser.js",
+    "script-converter.js",
+    "script-hub.js"
+  ]
+}
