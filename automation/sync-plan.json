@@ -1,0 +1,72 @@
+{
+  "owner": "imacte",
+  "schema_version": 1,
+  "repositories": [
+    {
+      "upstream": "blackmatrix7/ios_rule_script",
+      "name": "ios_rule_script",
+      "branch": "master",
+      "role": "routing-rules"
+    },
+    {
+      "upstream": "ddgksf2013/Rewrite",
+      "name": "Rewrite",
+      "branch": "master",
+      "role": "rewrite-configs"
+    },
+    {
+      "upstream": "ddgksf2013/Scripts",
+      "name": "Scripts",
+      "branch": "master",
+      "role": "rewrite-scripts"
+    },
+    {
+      "upstream": "fmz200/wool_scripts",
+      "name": "wool_scripts",
+      "branch": "main",
+      "role": "apple-douyin-rules-icons"
+    },
+    {
+      "upstream": "Script-Hub-Org/Script-Hub",
+      "name": "Script-Hub",
+      "branch": "main",
+      "role": "module-converter"
+    },
+    {
+      "upstream": "NSRingo/WeatherKit",
+      "name": "WeatherKit",
+      "branch": "main",
+      "role": "weather-module"
+    },
+    {
+      "upstream": "sub-store-org/Sub-Store",
+      "name": "Sub-Store",
+      "branch": "master",
+      "role": "subscription-manager"
+    },
+    {
+      "upstream": "chavyleung/scripts",
+      "name": "chavyleung-scripts",
+      "branch": "master",
+      "role": "boxjs"
+    },
+    {
+      "upstream": "SukkaW/Surge",
+      "name": "Surge",
+      "branch": "master",
+      "role": "ai-rule-source"
+    },
+    {
+      "upstream": "SukkaLab/ruleset.skk.moe",
+      "name": "ruleset.skk.moe",
+      "branch": "master",
+      "role": "built-ai-rules"
+    },
+    {
+      "upstream": "Orz-3/mini",
+      "name": "mini",
+      "branch": "master",
+      "role": "region-icons"
+    }
+  ]
+}
