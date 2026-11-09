@@ -2,7 +2,7 @@
   "schema_version": 1,
   "upstream": "Script-Hub-Org/Script-Hub",
   "branch": "main",
-  "upstream_commit": "502cf03f7db2e077d96c07c2cb151a8f0b152a80",
+  "upstream_commit": "bc1b8b05138adead482d87b284c58a34d8470503",
   "mode": "merge-upstream",
-  "checked_at": "2026-10-31T11:22:27.303Z"
+  "checked_at": "2026-11-09T22:41:38.915Z"
 }
