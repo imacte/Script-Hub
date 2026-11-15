@@ -57,7 +57,10 @@
       "role": "ai-rule-source"
     },
     {
-      "upstream": "SukkaLab/ruleset.skk.moe",
+      "upstream": "Minorescu/Surge",
+      "aliases": [
+        "SukkaLab/ruleset.skk.moe"
+      ],
       "name": "ruleset.skk.moe",
       "branch": "master",
       "role": "built-ai-rules"

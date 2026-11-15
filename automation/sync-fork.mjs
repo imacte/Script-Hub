@@ -139,9 +139,14 @@ export async function syncDefault(api, project, dryRun) {
         await api.request('POST', `repos/${target}/merge-upstream`, { branch:project.branch });
         mode = 'merge-upstream';
       } catch (error) {
-        if (![403,422].includes(error.status) || !/workflow.*(?:scope|permission|changes)/i.test(error.message)) throw error;
-        // The short-lived token cannot import workflow definitions. Merge source
-        // files while retaining the fork's CI and all non-conflicting owner edits.
+        // 403/422: the short-lived token may not import workflow definitions.
+        // 409: the fork's squashed sync history cannot be fast-forwarded against
+        // upstream, so a plain git merge reports phantom conflicts.
+        // Both are resolved by merging trees against the last synced upstream
+        // commit, which keeps the fork's CI and all non-conflicting owner edits.
+        const blocked = error.status === 409
+          || ([403,422].includes(error.status) && /workflow.*(?:scope|permission|changes)/i.test(error.message));
+        if (!blocked) throw error;
         mode = 'source-sync-preserving-owner-workflows';
         const base = previous?.upstream_commit || await api.commonAncestor(target, current.object.sha, upstream.object.sha);
         const [baseTree, ours, theirs] = await Promise.all([api.tree(target,base),api.tree(target,current.object.sha),api.tree(project.upstream,upstream.object.sha)]);
@@ -259,11 +264,21 @@ async function syncDerived(api, project, baseCommit, dryRun) {
 
 export async function run({repository,token,dryRun=false,api:injectedApi}={}) {
   const plan=JSON.parse(await readFile(new URL('./sync-plan.json',import.meta.url),'utf8'));
-  const project=plan.repositories.find(p=>`${plan.owner}/${p.name}`===repository);
-  if (!project || plan.owner!==OWNER) throw new Error('Repository is not in the authorized sync plan');
+  const planned=plan.repositories.find(p=>`${plan.owner}/${p.name}`===repository);
+  if (!planned || plan.owner!==OWNER) throw new Error('Repository is not in the authorized sync plan');
   const api=injectedApi||new GitHubApi(token,repository);
   const metadata=await api.request('GET',`repos/${repository}`);
-  if (metadata.owner.login!==OWNER || ![metadata.parent?.full_name,metadata.source?.full_name].includes(project.upstream)) throw new Error('Unexpected fork network');
+  // An upstream can be archived, transferred or replaced by a successor
+  // repository, and GitHub then re-points every fork in the network. Accept any
+  // allow-listed upstream the fork is really networked to, instead of pinning a
+  // single name that a future rename would silently break.
+  const allowed=[planned.upstream,...(planned.aliases||[])];
+  const network=[metadata.parent?.full_name,metadata.source?.full_name].filter(Boolean);
+  const upstreamName=network.find(name=>allowed.includes(name));
+  if (metadata.owner.login!==OWNER || !upstreamName) {
+    throw new Error(`Unexpected fork network: ${repository} is not a fork of ${allowed.join(' or ')}`);
+  }
+  const project={...planned,upstream:upstreamName};
   console.log(`Synchronizing ${repository} from ${project.upstream}`);
   const upstream=await syncDefault(api,project,dryRun);
   const derived=await syncDerived(api,project,upstream.sha,dryRun);
