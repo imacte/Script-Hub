@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "upstream": "Script-Hub-Org/Script-Hub",
-  "base_commit": "3a5e40a996ec5ba7d09d54d001e23c82ffbb94fb",
+  "base_commit": "777d92fa8f6d6022d52f8a1ff47a42af3e18eca4",
   "role": "module-converter",
   "releases": [],
   "managed_paths": [
