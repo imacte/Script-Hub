@@ -5,6 +5,7 @@ const vm = require('node:vm')
 const test = require('node:test')
 
 const parser = fs.readFileSync(path.join(__dirname, '..', 'Rewrite-Parser.beta.js'), 'utf8')
+const stableParser = fs.readFileSync(path.join(__dirname, '..', 'Rewrite-Parser.js'), 'utf8')
 const ruleParser = fs.readFileSync(path.join(__dirname, '..', 'rule-parser.beta.js'), 'utf8')
 
 async function convert(source, target, httpBodies = {}, sourceType = 'loon-plugin', queryParams = {}, runtime = {}) {
@@ -125,6 +126,49 @@ test('native Rewrite actions use the supported target matrix without losing rule
   }
   const unknown = await convert(source, 'unknown-module')
   assert.match(JSON.stringify(unknown.notifications), /当前目标不支持转换：unknown-module/)
+})
+
+test('Stash metadata emits one category when Surge declares category and tag', async () => {
+  const source = [
+    '#!name=Metadata fixture',
+    '#!category=Explicit category',
+    '#!tag=tag-one, tag-two',
+    '[Rule]',
+    'DOMAIN,example.com,DIRECT',
+  ].join('\n')
+  const { body } = await convert(source, 'stash-stoverride', {}, 'surge-module')
+
+  assert.equal((body.match(/^category: \|-$/gm) || []).length, 1)
+  assert.match(body, /category: \|-\n  Explicit category\n/)
+  assert.doesNotMatch(body, /tag-one|tag-two/)
+})
+
+test('Stash metadata falls back to tag when no explicit category exists', async () => {
+  const source = [
+    '#!name=Tag-only fixture',
+    '#!tag=tag-one, tag-two',
+    '[Rule]',
+    'DOMAIN,example.com,DIRECT',
+  ].join('\n')
+  const { body } = await convert(source, 'stash-stoverride', {}, 'surge-module')
+
+  assert.equal((body.match(/^category: \|-$/gm) || []).length, 1)
+  assert.match(body, /category: \|-\n  tag-one, tag-two\n/)
+})
+
+test('stable Stash metadata also emits one category for category and tag', async () => {
+  const source = [
+    '#!name=Stable metadata fixture',
+    '#!category=Explicit category',
+    '#!tag=tag-one, tag-two',
+    '[Rule]',
+    'DOMAIN,example.com,DIRECT',
+  ].join('\n')
+  const { body } = await convert(source, 'stash-stoverride', {}, 'surge-module', {}, { parser: stableParser })
+
+  assert.equal((body.match(/^category: \|-$/gm) || []).length, 1)
+  assert.match(body, /category: \|-\n  Explicit category\n/)
+  assert.doesNotMatch(body, /tag-one|tag-two/)
 })
 
 test('Stash Map Local preserves exact status, escaped text, and remote URLs in executable echo arguments', async () => {
